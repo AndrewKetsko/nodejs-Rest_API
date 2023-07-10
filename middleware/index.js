@@ -1,6 +1,6 @@
-const validateBody = require('./validateBody');
-const haveBody = require('./haveBody');
-const isValidId = require('./isValidId')
-const validateFavorite = require("./validateFavorite");
+const validateBody = require("./validateBody");
+const haveBody = require("./haveBody");
+const isValidId = require("./isValidId");
+const checkToken = require("./checkToken");
 
-module.exports = { validateBody, haveBody, isValidId, validateFavorite };
+module.exports = { validateBody, haveBody, isValidId, checkToken };
