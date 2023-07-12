@@ -24,7 +24,6 @@ const registerUser = async (req, res, next) => {
     password: hashPassword,
     avatarURL,
   });
-  console.log(newUser);
   res.status(201).json({ user: { email, subscription: newUser.subscription } });
 };
 
