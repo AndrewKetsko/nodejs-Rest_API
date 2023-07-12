@@ -1,9 +1,15 @@
 const { ctrlsWrapper, newError } = require("../helpers");
 const crypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
 const User = require("../models/User");
 const { JWT_STRING } = process.env;
 // const JWT_STRING = "2M6vwnlAxDyBdJBCJYYYv0q";
+
+const avatarsFolder = path.join(__dirname, "..", "public", "avatars");
 
 const registerUser = async (req, res, next) => {
   const { email, password } = req.body;
@@ -12,7 +18,12 @@ const registerUser = async (req, res, next) => {
     next(newError(409, "Email in use"));
   }
   const hashPassword = await crypt.hash(password, 10);
-  const newUser = await User.create({ email, password: hashPassword });
+  const avatarURL = gravatar.url(email);
+  const newUser = await User.create({
+    email,
+    password: hashPassword,
+    avatarURL,
+  });
   console.log(newUser);
   res.status(201).json({ user: { email, subscription: newUser.subscription } });
 };
@@ -59,10 +70,25 @@ const setSubscription = async (req, res, next) => {
   res.status(200).json(result);
 };
 
+const updateAvatar = async (req, res, next) => {
+  const { _id } = req.user;
+  const { path: tempPath, originalname } = req.file;
+    Jimp.read(tempPath)
+      .then((img) => img.resize(250, 250).write(resultPath))
+      .catch((err) => console.log(err.message));
+  const fileName = `${_id}${originalname}`;
+  const resultPath = path.join(avatarsFolder, fileName);
+  await fs.rename(tempPath, resultPath);
+  const avatarURL = path.join("avatars", fileName);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+  res.status(200).json({ avatarURL });
+};
+
 module.exports = {
   registerUser: ctrlsWrapper(registerUser),
   loginUser: ctrlsWrapper(loginUser),
   logoutUser: ctrlsWrapper(logoutUser),
   currentUser: ctrlsWrapper(currentUser),
   setSubscription: ctrlsWrapper(setSubscription),
+  updateAvatar: ctrlsWrapper(updateAvatar),
 };

@@ -1,6 +1,10 @@
 const express = require("express");
 const ctrls = require("../../controllers/users");
-const { validateBody, checkToken } = require("../../middleware/index");
+const {
+  validateBody,
+  checkToken,
+  uploadFiles,
+} = require("../../middleware/index");
 const {
   userValidationSchema,
   userSubscriptionSchema,
@@ -25,6 +29,13 @@ router.patch(
   // some adminCheckToken,
   validateBody(userSubscriptionSchema),
   ctrls.setSubscription
+);
+
+router.patch(
+  "/avatars",
+  checkToken,
+  uploadFiles.single("avatar"),
+  ctrls.updateAvatar
 );
 
 module.exports = router;
