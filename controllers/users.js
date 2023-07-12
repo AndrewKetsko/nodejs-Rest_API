@@ -7,7 +7,6 @@ const fs = require("fs/promises");
 const Jimp = require("jimp");
 const User = require("../models/User");
 const { JWT_STRING } = process.env;
-// const JWT_STRING = "2M6vwnlAxDyBdJBCJYYYv0q";
 
 const avatarsFolder = path.join(__dirname, "..", "public", "avatars");
 
