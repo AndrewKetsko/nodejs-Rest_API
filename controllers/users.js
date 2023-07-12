@@ -41,7 +41,7 @@ const loginUser = async (req, res, next) => {
   const token = jwt.sign({ id: user._id }, JWT_STRING, { expiresIn: "1d" });
   await User.findByIdAndUpdate(user._id, { token });
   res
-    .status(201)
+    .status(200)
     .json({ token, user: { email, subscription: user.subscription } });
 };
 
