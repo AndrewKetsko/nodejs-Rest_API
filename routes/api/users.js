@@ -8,6 +8,7 @@ const {
 const {
   userValidationSchema,
   userSubscriptionSchema,
+  mailSchema,
 } = require("../../models/joiSchemas");
 
 const router = express.Router();
@@ -17,6 +18,10 @@ router.post(
   validateBody(userValidationSchema),
   ctrls.registerUser
 );
+
+router.get("/verify/:verificationToken", ctrls.verifyMail);
+
+router.post("/verify", validateBody(mailSchema), ctrls.resendVerifyMail);
 
 router.post("/login", validateBody(userValidationSchema), ctrls.loginUser);
 
