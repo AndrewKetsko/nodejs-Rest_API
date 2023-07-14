@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const { JWT_STRING } = process.env;
-// const JWT_STRING = "2M6vwnlAxDyBdJBCJYYYv0q";
 const User = require("../models/User");
 const { newError } = require("../helpers");
 
