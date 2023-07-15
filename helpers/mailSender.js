@@ -1,14 +1,14 @@
 const nodemailer = require("nodemailer");
 
-const { MAIL_PASS } = process.env;
+const { EMAIL_PASS, SMTP_HOST, EMAIL_ADDR } = process.env;
 
 const mailerConfig = {
-  host: "smtp.meta.ua",
+  host: SMTP_HOST,
   port: 465,
   secure: true,
   auth: {
-    user: "monicm82@meta.ua",
-    pass: MAIL_PASS,
+    user: EMAIL_ADDR,
+    pass: EMAIL_PASS,
   },
 };
 
@@ -21,11 +21,6 @@ const mailSender = async (data) => {
 };
 
 module.exports = mailSender;
-
-
-
-
-
 
 // const mail = {
 //   to: "monicm82@i.ua",

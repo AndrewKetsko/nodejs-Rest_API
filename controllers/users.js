@@ -6,7 +6,6 @@ const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
 const User = require("../models/User");
-const { use } = require("../routes/api/users");
 const { JWT_STRING, APP_HOST } = process.env;
 
 const avatarsFolder = path.join(__dirname, "..", "public", "avatars");
@@ -31,7 +30,7 @@ const registerUser = async (req, res, next) => {
     subject: "Verify Email",
     html: `<a target="_blanc" href="${APP_HOST}/users/verify/${verificationToken}">Click to verify</a>`,
   };
-  // await mailSender(verMail);
+  await mailSender(verMail);
   res.status(201).json({ user: { email, subscription: newUser.subscription } });
 };
 
@@ -62,7 +61,7 @@ const resendVerifyMail = async (req, res, next) => {
     subject: "Verify Email",
     html: `<a target="_blanc" href="${APP_HOST}/users/verify/${user.verificationToken}">Click to verify</a>`,
   };
-  // await mailSender(verMail);
+  await mailSender(verMail);
   res.status(200).json({ message: "Verification email sent" });
 };
 
