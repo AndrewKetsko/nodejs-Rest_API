@@ -1,5 +1,6 @@
 const { ctrlsWrapper, newError, mailSender } = require("../helpers");
 const crypt = require("bcrypt");
+const {nanoid} = require('nanoid');
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
@@ -18,7 +19,7 @@ const registerUser = async (req, res, next) => {
   }
   const hashPassword = await crypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
-  const verificationToken = await crypt.hash(email, 10);
+  const verificationToken = nanoid();
   const newUser = await User.create({
     email,
     password: hashPassword,
