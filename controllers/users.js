@@ -1,12 +1,13 @@
-const { ctrlsWrapper, newError } = require("../helpers");
+const { ctrlsWrapper, newError, mailSender } = require("../helpers");
 const crypt = require("bcrypt");
+const {nanoid} = require('nanoid');
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
 const User = require("../models/User");
-const { JWT_STRING } = process.env;
+const { JWT_STRING, APP_HOST } = process.env;
 
 const avatarsFolder = path.join(__dirname, "..", "public", "avatars");
 
@@ -18,12 +19,51 @@ const registerUser = async (req, res, next) => {
   }
   const hashPassword = await crypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
+  const verificationToken = nanoid();
   const newUser = await User.create({
     email,
     password: hashPassword,
     avatarURL,
+    verificationToken,
   });
+  const verMail = {
+    to: email,
+    subject: "Verify Email",
+    html: `<a target="_blanc" href="${APP_HOST}/users/verify/${verificationToken}">Click to verify</a>`,
+  };
+  await mailSender(verMail);
   res.status(201).json({ user: { email, subscription: newUser.subscription } });
+};
+
+const verifyMail = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    next(newError(404, "User not found"));
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationToken: null,
+  });
+  res.status(200).json({ message: "Verification successful" });
+};
+
+const resendVerifyMail = async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    next(newError(401, "Email or password is wrong"));
+  }
+  if (user.verify) {
+    next(newError(400, "Verification has already been passed"));
+  }
+  const verMail = {
+    to: email,
+    subject: "Verify Email",
+    html: `<a target="_blanc" href="${APP_HOST}/users/verify/${user.verificationToken}">Click to verify</a>`,
+  };
+  await mailSender(verMail);
+  res.status(200).json({ message: "Verification email sent" });
 };
 
 const loginUser = async (req, res, next) => {
@@ -31,6 +71,9 @@ const loginUser = async (req, res, next) => {
   const user = await User.findOne({ email });
   if (!user) {
     next(newError(401, "Email or password is wrong"));
+  }
+  if (!user.verify) {
+    next(newError(409, "Verify your mail first, please"));
   }
   const comparePassword = await crypt.compare(password, user.password);
   if (!comparePassword) {
@@ -71,9 +114,9 @@ const setSubscription = async (req, res, next) => {
 const updateAvatar = async (req, res, next) => {
   const { _id } = req.user;
   const { path: tempPath, originalname } = req.file;
-    Jimp.read(tempPath)
-      .then((img) => img.resize(250, 250).write(resultPath))
-      .catch((err) => console.log(err.message));
+  Jimp.read(tempPath)
+    .then((img) => img.resize(250, 250).write(resultPath))
+    .catch((err) => console.log(err.message));
   const fileName = `${_id}${originalname}`;
   const resultPath = path.join(avatarsFolder, fileName);
   await fs.rename(tempPath, resultPath);
@@ -89,4 +132,6 @@ module.exports = {
   currentUser: ctrlsWrapper(currentUser),
   setSubscription: ctrlsWrapper(setSubscription),
   updateAvatar: ctrlsWrapper(updateAvatar),
+  verifyMail: ctrlsWrapper(verifyMail),
+  resendVerifyMail: ctrlsWrapper(resendVerifyMail),
 };

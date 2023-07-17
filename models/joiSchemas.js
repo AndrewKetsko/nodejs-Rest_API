@@ -6,6 +6,13 @@ const setFavoriteSchema = Joi.object({
     .error(() => new Error("favorite")),
 });
 
+const mailSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .required()
+    .error(() => new Error("email")),
+});
+
 const contactSchema = Joi.object({
   name: Joi.string()
     .min(3)
@@ -47,4 +54,5 @@ module.exports = {
   contactSchema,
   userValidationSchema,
   userSubscriptionSchema,
+  mailSchema,
 };
