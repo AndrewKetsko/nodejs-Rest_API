@@ -1,23 +1,7 @@
-<<<<<<< Updated upstream
-const { ctrlsWrapper, newError, mailSender } = require("../helpers");
-const crypt = require("bcrypt");
-const {nanoid} = require('nanoid');
-=======
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-const { ctrlsWrapper, newError } = require("../helpers");
-const crypt = require("bcrypt");
-=======
+
 const { ctrlsWrapper, newError, mailSender } = require("../helpers");
 const crypt = require("bcryptjs");
 const {nanoid} = require('nanoid');
->>>>>>> Stashed changes
-=======
-const { ctrlsWrapper, newError, mailSender } = require("../helpers");
-const crypt = require("bcrypt");
-const {nanoid} = require('nanoid');
->>>>>>> 3b009ca3727fd30771782c60d9bd1a84966abeb8
->>>>>>> Stashed changes
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
