@@ -1,5 +1,9 @@
 const { ctrlsWrapper, newError, mailSender } = require("../helpers");
+<<<<<<< Updated upstream
 const crypt = require("bcrypt");
+=======
+const crypt = require("bcryptjs");
+>>>>>>> Stashed changes
 const {nanoid} = require('nanoid');
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
